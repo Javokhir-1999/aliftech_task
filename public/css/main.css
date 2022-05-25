@@ -1,0 +1,16 @@
+body, html{
+	margin: 0;
+	padding: 0;
+	font-family: Nunito;
+}
+body{
+	color: #404345;
+	background-color: rgb(232, 237, 238);
+}	
+.btn-custom{
+	width: 100%;
+}
+.form-control{
+	background-color: rgb(243, 244, 247);
+	border-color: white;
+}
