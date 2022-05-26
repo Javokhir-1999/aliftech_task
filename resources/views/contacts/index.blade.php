@@ -20,7 +20,7 @@
                         <button data-bs-toggle="modal" data-bs-target="#addContact" type="button" class="btn btn-defoult border border-secondary btn-custom">
                             <img style="max-width:23px;"src="/img/add-user.png" alt="add contact">
                         </button>
-                        @include('layouts.contact-add')
+                        @include('contacts.contact-add')
                     </div>
                 </div>
             </form>
@@ -33,13 +33,33 @@
                 <thead>
                     <tr>
                         <th>Names</th>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                        <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
+                    <form method="Post" class="form-validate" action="">
+                    @csrf
                     @if(count($contacts) > 0)
                     @foreach($contacts as $contact)
                     <tr>
                         <td>{{ $contact->name }}</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td>
+                            <button type="button" class="btn btn-info btn-sm text-white">Show</button>
+                            <button type="button" class="btn btn-info btn-sm">Update</button>
+                            <a href="{{ route('destroy', $contact->id)}}" class="btn btn-danger btn-sm">X</a>                            
+                        </td>
                     </tr>
                     @endforeach
                     @else
@@ -48,6 +68,7 @@
                         <td>Contact not found!</td>
                     </tr>
                     @endif
+                    </form>   
                 </tbody>
             </table>
 
@@ -66,41 +87,72 @@
 @section('scripts')
 <script>
     $(document).ready(function (){
+
+        var phoneLimit = 2;
+        var emailLimit = 2;
+
+        $(".add-phone").on('click', function(){ 
+            if(phoneLimit > 1){
+                phoneLimit++;
+                $(".phones").append(`
+                <input type="phone" name="`+phoneLimit+`" id="phone`+phoneLimit+`" onkeyup="this.value = this.value.replace (/[^0-9+]/, '')"       
+                placeholder="+998......" maxlength="13" class="form-control phone-form-control" />
+                `);
+            }
+        });
+
+        $(".add-email").on('click', function(){ 
+            if(emailLimit > 1){
+                emailLimit--;
+                $(".emails").append(`
+                <input type="text" name="`+emailLimit+`" id="email`+emailLimit+`" class="form-control email-form-control" 
+                placeholder="demo@email.adress" aria-label="Email adress" aria-describedby="basic-addon2">
+                `);
+            }
+        });    
+
         $(document).on('click', '.add-contacts', function (e){
-            e.preventDefault();
-            var data = {
+            var contactData = {
                 'name': $('#name').val(),
                 'phone': $('#phone').val(),
+                'phone0': $('#phone0').val(),
+                'phone1': $('#phone1').val(),
                 'email': $('#email').val(),
-            }
+                'email0': $('#email0').val(),
+                'email1': $('#email1').val(),
+            }         
+            var nameRegExp = new RegExp("^(.*[a-z]){3,}$");
+            var phoneRegExp = new RegExp("^(.*[0-9]){9}$");
+            if (nameRegExp.test(contactData.name)) {
+                if (phoneRegExp.test(contactData.phone)){
+                    $.ajaxSetup({
+                        headers: {
+                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                        }
+                    });
+                    $.ajax({
+                        type: "POST",
+                        url: "/contacts/add",
+                        data: contactData,
+                        dataType: "json",
+                        success: function (response) {
+                            console.log(response);
 
-            $.ajax({
-                type: "POST",
-                url: "/contacts",
-                data: data,
-                dataType: "json",
-                success: function (response) {
-                    // console.log(response);
-                    if (response.status == 400) {
-                        $('#save_msgList').html("");
-                        $('#save_msgList').addClass('alert alert-danger');
-                        $.each(response.errors, function (key, err_value) {
-                            $('#save_msgList').append('<li>' + err_value + '</li>');
-                        });
-                        $('.add_student').text('Save');
-                    } else {
-                        $('#save_msgList').html("");
-                        $('#success_message').addClass('alert alert-success');
-                        $('#success_message').text(response.message);
-                        $('#AddStudentModal').find('input').val('');
-                        $('.add_student').text('Save');
-                        $('#AddStudentModal').modal('hide');
-                        fetchstudent();
-                    }
+                            if(response.status = 200)
+                                $('#addContact').hide();
+                                $('.modal-backdrop').hide();
+                                location.reload();
+                        
+                            alert(response.message);
+                        }
+                    });
+                }else{
+                    alert('Plase at least one and correct phone number  !')
                 }
-            });
-
-            // console.log(data);
+            }else{
+                alert('Plase Enter correct Contact name and at least three letters!')
+            }
+            
         });
     });
 </script>

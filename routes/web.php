@@ -20,6 +20,7 @@ Route::get('/', function () {
 
 Route::prefix('contacts')->group(function () {
     Route::resource('/', App\Http\Controllers\ContactController::class);
+    Route::post('/add','App\Http\Controllers\ContactController@addContact')->name("add-contact");
     Route::get('/search', [App\Http\Controllers\ContactController::class, 'search'])->name('search');
 });
 

@@ -107,4 +107,78 @@ class ContactController extends Controller
             
         return view('contacts.index', ['contacts' => $contacts]);
     }
+
+    public function addContact(Request $request)
+    {
+
+        $name = $request->input('name');
+
+        $phone = $request->input('phone');
+        $phone0 = $request->input('phone0');
+        $phone1 = $request->input('phone1');
+
+        $email = $request->input('email');
+        $email0 = $request->input('email0');
+        $email1 = $request->input('email1');
+
+        $contactCheck = DB::table('contacts')->where('name', $name)->exists();
+        if($contactCheck)
+            return response()->json([
+                'status' => 401,
+                'message' => 'Contact is already Exsists!'
+            ]);
+
+        $contact = new Contact();
+        $contact->name = $name;
+        $contact->save();
+        
+        function phoneStausCheck($phone, $contact){
+            if($phone)
+                if(DB::table('phones')->where('phone', $phone)->exists())
+                    return response()->json([
+                        'status' => 401,
+                        'message' => 'Contact '.$phone.' is already Exsists!'
+                    ]);
+                else
+                    DB::table('phones')->insert([
+                        'contact_id' => $contact->id,
+                        'phone' => $phone , 
+                    ]);
+        } 
+
+        phoneStausCheck($phone, $contact);
+        phoneStausCheck($phone0, $contact);
+        phoneStausCheck($phone1, $contact);
+
+        function emailStausCheck($email, $contact){
+            if($email)
+                if(DB::table('emails')->where('email', $email)->exists())
+                    return response()->json([
+                        'status' => 401,
+                        'message' => 'Contact with: '.$email.' email is already Exsists!'
+                    ]);
+                else
+                    DB::table('emails')->insert([
+                        'contact_id' => $contact->id,
+                        'email' => $email, 
+                    ]);
+        } 
+
+        emailStausCheck($email, $contact);
+        emailStausCheck($email0, $contact);
+        emailStausCheck($email1, $contact);
+
+        return response()->json([
+            'status' => 200,
+            'message' => 'Contact created successfully'
+        ]);
+
+
+
+
+      
+
+            
+        
+    }
 }
