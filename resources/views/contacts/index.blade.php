@@ -85,12 +85,12 @@
 <script>
     $(document).ready(function (){
 
-        var phoneLimit = 2;
-        var emailLimit = 2;
+        var phoneLimit = 3;
+        var emailLimit = 3;
 
         $(".add-phone").on('click', function(){ 
             if(phoneLimit > 1){
-                phoneLimit++;
+                phoneLimit--;
                 $(".phones").append(`
                 <input type="phone" name="`+phoneLimit+`" id="phone`+phoneLimit+`" onkeyup="this.value = this.value.replace (/[^0-9+]/, '')"       
                 placeholder="+998......" maxlength="13" class="form-control phone-form-control" />
