@@ -43,8 +43,6 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <form method="Post" class="form-validate" action="">
-                    @csrf
                     @if(count($contacts) > 0)
                     @foreach($contacts as $contact)
                     <tr>
@@ -58,7 +56,7 @@
                         <td>
                             <button type="button" class="btn btn-info btn-sm text-white">Show</button>
                             <button type="button" class="btn btn-info btn-sm">Update</button>
-                            <a href="{{ route('destroy', $contact->id)}}" class="btn btn-danger btn-sm">X</a>                            
+                            <button type="button" class="btn btn-danger btn-sm">X</button>                            
                         </td>
                     </tr>
                     @endforeach
@@ -68,7 +66,6 @@
                         <td>Contact not found!</td>
                     </tr>
                     @endif
-                    </form>   
                 </tbody>
             </table>
 
